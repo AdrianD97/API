@@ -1,0 +1,92 @@
+<html>
+	<head>
+		<title></title>
+		<style type="text/css">
+			table, th, td {
+				border: 1px solid black;
+			}
+		</style>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script type="text/javascript">
+			function edit_student(studentId) {
+				// TODO: implement edit request
+				/*
+					1. cred ca trebuie sa facem un request de get mai intai,
+					pentru a a vea formularul precompletat
+					2. apoi requestul de put
+				*/
+				console.log("Edit student with id " + studentId);
+			}
+
+			function delete_student(studentId) {
+				console.log("Delete student with id " + studentId);
+				$.ajax({
+				  	type: "DELETE",
+				   	url: "http://localhost:8080/students/delete/" + studentId,
+				   	success: function(response) {
+				   		console.log(response);
+				   		location.reload();
+				   	},
+				   	error: function(err) {
+				   		console.log(error);
+				   	}
+				});
+			}
+
+			function fetch_students() {
+			  	$.ajax({
+				  	method: "GET",
+				   	url: "http://localhost:8080/students/list/",
+				   	success: function(data) {
+				    	let content = "";
+
+				    	$.each(data, function(index, item) {
+				    		const id = JSON.stringify(item._id);
+
+					        content += "<tr>" +
+					        		   "<td>" + (index + 1) + "</td>" +
+					        		   "<td>" + item.name + "</td>" +
+					        		   "<td>" + item.age + "</td>" +
+					        		   "<td>" + item.faculty + "</td>" +
+					        		   "<td>" + item.email + "</td>" +
+					        		   "<td>" +
+					        		   "<button onclick='edit_student(" + id +
+					        		   				")'>Edit</button>" +
+					        		   "<button onclick='delete_student(" + id +
+					        		   				")'>Delete</button>" +
+					        		   "</td>" +
+					        		   "</tr>";
+					    });
+				    	
+				    	$("tbody").html(content);
+				    },
+				    error: function(error) {
+			            console.log(error);
+			        }
+				});
+		 	}
+
+			$(document).ready(function() {
+				fetch_students();
+			});
+		</script>
+	</head>
+	<body>
+		<table>
+			<thead>
+				<tr>
+					<th>Id</th>
+					<th>Name</th>
+					<th>Age</th>
+					<th>Faculty</th>
+					<th>Email</th>
+					<th>Options</th>
+				</tr>
+			</thead>
+	    	<tbody></tbody>
+	    </table>
+
+	    <!-- TODO:
+	    1. button with "Add" label. When press will apear a --> 
+	</body>
+</html>
