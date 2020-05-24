@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<!-- acest cod va trebui integrat in index.html de pe branch-ul frontend_branch --> 
+<!-- in index.html vom avea un button numit Chat, cand se apasa redirectam
+catre aceasta pagina unde va avea loc discutia cu serverul care va forwarda
+catre celalat client , deci cand se va cere resursa
+/chat -> vom face sendFile la acest fisier -->
+
+<html>
+	<head>
+		<title></title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script type="text/javascript">
+			window.WebSocket = window.WebSocket;
+
+			const connection = new WebSocket('ws://localhost:8080');
+
+			connection.onopen = function () {
+				console.log("Connection opened.");
+			};
+
+			connection.onerror = function (error) {
+				console.log("An aerror occured");
+			};
+
+			connection.onmessage = function (message) {
+				try {
+					const recv_message = JSON.parse(message.data);
+					console.log(recv_message);
+					const elem_recv = document.createElement('p');
+					elem_recv.innerHTML = "[New message]: " + recv_message.data;
+					document.body.appendChild(elem_recv);
+
+					$(document).keypress(function(event) {
+					    const keycode = event.keyCode || event.which;
+					    const content = $("input").val();
+					    if(keycode === 13 && content !== '') {
+					    	const send_massage = {
+					    		"id": recv_message.id,
+					    		"id_dest": recv_message.id_dest,
+					    		"data": content
+					    	}
+					    	$("input").val('');
+
+					    	const elem_send = document.createElement('p');
+							elem_send.innerHTML = "[Send message]: " + send_massage.data;
+							document.body.appendChild(elem_send);
+
+					    	connection.send(JSON.stringify(send_massage));
+					    }
+					});
+				} catch (e) {
+					console.log(e);
+				}
+			};
+		</script>
+	</head>
+	<body>
+		<input type="text" name="message" />
+	</body>
+</html>
