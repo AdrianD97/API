@@ -21,7 +21,7 @@
 			function delete_student(studentId) {
 				console.log("Delete student with id " + studentId);
 				$.ajax({
-				  	type: "DELETE",
+				  	method: "DELETE",
 				   	url: "http://localhost:8080/students/delete/" + studentId,
 				   	success: function(response) {
 				   		console.log(response);

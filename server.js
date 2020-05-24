@@ -26,8 +26,7 @@ mongoose.connect(dbConfig.url, {
 });
 
 app.get('/favicon.ico', (req, res) => {
-    console.log("favicon request");
-    res.status(204);
+    res.status(204).end();
 });
 
 app.get("/dashboard", (req, res) => {
