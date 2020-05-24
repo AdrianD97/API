@@ -25,6 +25,11 @@ mongoose.connect(dbConfig.url, {
     process.exit();
 });
 
+app.get('/favicon.ico', (req, res) => {
+    console.log("favicon request");
+    res.status(204);
+});
+
 app.get("/dashboard", (req, res) => {
     res.sendFile("./public/index.html", { root: __dirname });
 });
