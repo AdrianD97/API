@@ -3,8 +3,6 @@ const bodyParser = require("body-parser");
 
 const app = express();
 
-app.use("/dashboard", express.static('public'));
-
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json());
 
@@ -25,6 +23,10 @@ mongoose.connect(dbConfig.url, {
 }).catch((err) => {
     console.log("Could not connect to the database. Exiting now...", err);
     process.exit();
+});
+
+app.get("/dashboard", (req, res) => {
+    res.sendFile("./public/index.html", { root: __dirname });
 });
 
 require("./app/routes/student.routes.js")(app);
