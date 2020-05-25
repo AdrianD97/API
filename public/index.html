@@ -8,12 +8,24 @@
 		</style>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 		<script type="text/javascript">
+			function create_student() {
+				/*TODO:
+					daca se da click pe butonul Add, atunci va aparea formularul(care este hidden initial, necompletat).
+					Cand da submit apelam o metoda care sa faca ajax requestul de create
+					(method: POST) si de asemnea facem refresh la pagina
+				*/
+			}
+
 			function edit_student(studentId) {
-				// TODO: implement edit request
+				// TODO:
 				/*
-					1. cred ca trebuie sa facem un request de get mai intai,
-					pentru a a vea formularul precompletat
-					2. apoi requestul de put
+					Facem ajax requestul care ne da informatiile pentru studentul
+					cu studentId id.
+					Completam formularul(deci acesta va deveni vizibil) cu datele initiale 
+					ale studentului din pagina
+					iar cand va apasa pe butonul de submit vom apela o functie care
+					face ajax requestul de update(method: PUT) si de asemenea vom face 
+					refresh la pagina pentru a vedea modificarile in tabel.
 				*/
 				console.log("Edit student with id " + studentId);
 			}
@@ -31,6 +43,14 @@
 				   		console.log(error);
 				   	}
 				});
+			}
+
+			function delete_all_students() {
+				/*
+				cand se da click pe butonul Delete All, se va apela aceasta functie care
+				va face ajax requestul de stergere a tuturor studentilor
+				(method: DELETE), si bine inteles vom face refresh la pagina
+				*/
 			}
 
 			function fetch_students() {
@@ -87,6 +107,15 @@
 	    </table>
 
 	    <!-- TODO:
-	    1. button with "Add" label. When press will apear a --> 
+	    1. button with Add label. cand este apasat va aparea formularul  
+		2. button Delete All. cand este apasat se va apela delete_all_students 
+		3. cand se apasa Edit  va aparea formularul precompletat cu datele respectivlui
+			student pentru a putea fi editate
+		4. un button Chat care in momentul in care este apasat va redirecta userul
+		pe pagina de chat(pagina este pe branch-ul chat_branch)
+		-->
+
+
+		<!-- Aici va fi un form, care initila va fi hidden--> 
 	</body>
 </html>
