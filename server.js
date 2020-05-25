@@ -25,8 +25,8 @@ mongoose.connect(dbConfig.url, {
     process.exit();
 });
 
-app.get("/dashboard", (req, res) => {
-    res.sendFile("./chat.html", { root: __dirname });
+app.get("/chat", (req, res) => {
+    res.sendFile("./public/chat.html", { root: __dirname });
 });
 
 require("./app/routes/student.routes.js")(app);
