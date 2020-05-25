@@ -28,7 +28,7 @@ catre celalat client , deci cand se va cere resursa
 					console.log(recv_message);
 					const elem_recv = document.createElement('p');
 					elem_recv.innerHTML = "[New message]: " + recv_message.data;
-					document.body.appendChild(elem_recv);
+					document.body.insertBefore(elem_recv, document.getElementById('new_message'));
 
 					$(document).keypress(function(event) {
 					    const keycode = event.keyCode || event.which;
@@ -43,7 +43,7 @@ catre celalat client , deci cand se va cere resursa
 
 					    	const elem_send = document.createElement('p');
 							elem_send.innerHTML = "[Send message]: " + send_massage.data;
-							document.body.appendChild(elem_send);
+							document.body.insertBefore(elem_send, document.getElementById('new_message'));
 
 					    	connection.send(JSON.stringify(send_massage));
 					    }
@@ -55,6 +55,6 @@ catre celalat client , deci cand se va cere resursa
 		</script>
 	</head>
 	<body>
-		<input type="text" name="message" />
+		<input type="text" id="new_message" name="message" />
 	</body>
 </html>
