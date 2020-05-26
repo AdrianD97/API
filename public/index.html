@@ -8,30 +8,39 @@
 		</style>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 		<script type="text/javascript">
-			function create_student() {
-				/*TODO:
-					daca se da click pe butonul Add, atunci va aparea formularul(care este hidden initial, necompletat).
-					Cand da submit apelam o metoda care sa faca ajax requestul de create
-					(method: POST) si de asemnea facem refresh la pagina
-				*/
+			function create_student(data) {
+				$.ajax({
+				  	method: "POST",
+				   	url: "http://localhost:8080/students/create/",
+				   	data: data,
+			        dataType: 'json',
+				   	success: function(response) {
+				   		console.log(response);
+				   		location.reload();
+				   	},
+				   	error: function(err) {
+				   		console.log(err);
+				   	}
+				});
 			}
 
-			function edit_student(studentId) {
-				// TODO:
-				/*
-					Facem ajax requestul care ne da informatiile pentru studentul
-					cu studentId id.
-					Completam formularul(deci acesta va deveni vizibil) cu datele initiale 
-					ale studentului din pagina
-					iar cand va apasa pe butonul de submit vom apela o functie care
-					face ajax requestul de update(method: PUT) si de asemenea vom face 
-					refresh la pagina pentru a vedea modificarile in tabel.
-				*/
-				console.log("Edit student with id " + studentId);
+			function edit_student(data, studentId) {
+				$.ajax({
+				  	method: "PUT",
+				   	url: "http://localhost:8080/students/edit/" + studentId,
+				   	data: data,
+			        dataType: 'json',
+				   	success: function(response) {
+				   		console.log(response);
+				   		location.reload();
+				   	},
+				   	error: function(err) {
+				   		console.log(err);
+				   	}
+				});
 			}
 
 			function delete_student(studentId) {
-				console.log("Delete student with id " + studentId);
 				$.ajax({
 				  	method: "DELETE",
 				   	url: "http://localhost:8080/students/delete/" + studentId,
@@ -46,12 +55,61 @@
 			}
 
 			function delete_all_students() {
-				/*
-				cand se da click pe butonul Delete All, se va apela aceasta functie care
-				va face ajax requestul de stergere a tuturor studentilor
-				(method: DELETE), si bine inteles vom face refresh la pagina
-				*/
+				$.ajax({
+				  	method: "DELETE",
+				   	url: "http://localhost:8080/students/delete/",
+				   	success: function(response) {
+				   		console.log(response);
+				   		location.reload();
+				   	},
+				   	error: function(err) {
+				   		console.log(err);
+				   	}
+				});
 			}
+
+			function perform_operation() {
+				const id = $('#id').val();
+
+				const data = {
+					"name": $('#name').val(),
+					"age": $('#age').val(),
+					"faculty": $('#faculty').val(),
+					"email": $('#email').val()
+				}
+
+				if (id === '') {
+					create_student(data);
+				} else {
+					edit_student(data, id);
+				}
+			}
+
+			function complete_form(studentId) {
+				$.ajax({
+				  	method: "GET",
+				   	url: "http://localhost:8080/students/about/" + studentId,
+				   	success: function(student) {
+				   		$('#id').val(studentId);
+				   		$('#name').val(student.name);
+				   		$('#age').val(student.age);
+				   		$('#faculty').val(student.faculty);
+				   		$('#email').val(student.email);
+				   	},
+				   	error: function(err) {
+				   		console.log(err);
+				   	}
+				});
+			}
+
+			function handle_form(type, id = null) {
+		 		if (type === "edit") {
+		 			complete_form(id);
+		 		}
+
+		 		const form = document.getElementById('student_form');
+		 		form.style.display = "block";
+		 	}
 
 			function fetch_students() {
 			  	$.ajax({
@@ -59,6 +117,7 @@
 				   	url: "http://localhost:8080/students/list/",
 				   	success: function(data) {
 				    	let content = "";
+				    	const type = "\"edit\"";
 
 				    	$.each(data, function(index, item) {
 				    		const id = JSON.stringify(item._id);
@@ -70,14 +129,14 @@
 					        		   "<td>" + item.faculty + "</td>" +
 					        		   "<td>" + item.email + "</td>" +
 					        		   "<td>" +
-					        		   "<button onclick='edit_student(" + id +
-					        		   				")'>Edit</button>" +
+					        		   "<button onclick='handle_form(" + type +
+					        		   			", " + id + ")'>Edit</button>" +
 					        		   "<button onclick='delete_student(" + id +
 					        		   				")'>Delete</button>" +
 					        		   "</td>" +
 					        		   "</tr>";
 					    });
-				    	
+
 				    	$("tbody").html(content);
 				    },
 				    error: function(err) {
@@ -86,8 +145,21 @@
 				});
 		 	}
 
+		 	function redirect_to_chat() {
+		 		/*
+		 			Cand vom face merge la acest branch pe master, vom avea deja
+		 			URI pentru identificare chat.html
+		 		*/
+		 		const url = "http://localhost:8080/chat";
+		 		$(location).attr('href', url);
+		 	}
+
 			$(document).ready(function() {
 				fetch_students();
+
+				$(document).on("submit", "form", function(e) {
+				    e.preventDefault();
+				});
 			});
 		</script>
 	</head>
@@ -106,16 +178,17 @@
 	    	<tbody></tbody>
 	    </table>
 
-	    <!-- TODO:
-	    1. button with Add label. cand este apasat va aparea formularul  
-		2. button Delete All. cand este apasat se va apela delete_all_students 
-		3. cand se apasa Edit  va aparea formularul precompletat cu datele respectivlui
-			student pentru a putea fi editate
-		4. un button Chat care in momentul in care este apasat va redirecta userul
-		pe pagina de chat(pagina este pe branch-ul chat_branch)
-		-->
+	    <button onclick="handle_form('create')">Add</button>
+	    <button onclick="delete_all_students()">Delete All</button>
+	    <button onclick="redirect_to_chat()">Chat</button>
 
-
-		<!-- Aici va fi un form, care initila va fi hidden--> 
+	    <form id="student_form" style="display: none;">
+	    	<input type="hidden" id="id" />
+	    	<input type="text" id="name" placeholder="Student name" />
+	    	<input type="number" id="age" placeholder="Student age" />
+	    	<input type="text" id="faculty" placeholder="Faculty" />
+	    	<input type="email" id="email" placeholder="Student Email" />
+	    	<button onclick="perform_operation()">Submit</button>
+	    </form>
 	</body>
 </html>
