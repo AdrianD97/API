@@ -1,0 +1,194 @@
+<html>
+	<head>
+		<title></title>
+		<style type="text/css">
+			table, th, td {
+				border: 1px solid black;
+			}
+		</style>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script type="text/javascript">
+			function create_student(data) {
+				$.ajax({
+				  	method: "POST",
+				   	url: "http://localhost:8080/students/create/",
+				   	data: data,
+			        dataType: 'json',
+				   	success: function(response) {
+				   		console.log(response);
+				   		location.reload();
+				   	},
+				   	error: function(err) {
+				   		console.log(err);
+				   	}
+				});
+			}
+
+			function edit_student(data, studentId) {
+				$.ajax({
+				  	method: "PUT",
+				   	url: "http://localhost:8080/students/edit/" + studentId,
+				   	data: data,
+			        dataType: 'json',
+				   	success: function(response) {
+				   		console.log(response);
+				   		location.reload();
+				   	},
+				   	error: function(err) {
+				   		console.log(err);
+				   	}
+				});
+			}
+
+			function delete_student(studentId) {
+				$.ajax({
+				  	method: "DELETE",
+				   	url: "http://localhost:8080/students/delete/" + studentId,
+				   	success: function(response) {
+				   		console.log(response);
+				   		location.reload();
+				   	},
+				   	error: function(err) {
+				   		console.log(err);
+				   	}
+				});
+			}
+
+			function delete_all_students() {
+				$.ajax({
+				  	method: "DELETE",
+				   	url: "http://localhost:8080/students/delete/",
+				   	success: function(response) {
+				   		console.log(response);
+				   		location.reload();
+				   	},
+				   	error: function(err) {
+				   		console.log(err);
+				   	}
+				});
+			}
+
+			function perform_operation() {
+				const id = $('#id').val();
+
+				const data = {
+					"name": $('#name').val(),
+					"age": $('#age').val(),
+					"faculty": $('#faculty').val(),
+					"email": $('#email').val()
+				}
+
+				if (id === '') {
+					create_student(data);
+				} else {
+					edit_student(data, id);
+				}
+			}
+
+			function complete_form(studentId) {
+				$.ajax({
+				  	method: "GET",
+				   	url: "http://localhost:8080/students/about/" + studentId,
+				   	success: function(student) {
+				   		$('#id').val(studentId);
+				   		$('#name').val(student.name);
+				   		$('#age').val(student.age);
+				   		$('#faculty').val(student.faculty);
+				   		$('#email').val(student.email);
+				   	},
+				   	error: function(err) {
+				   		console.log(err);
+				   	}
+				});
+			}
+
+			function handle_form(type, id = null) {
+		 		if (type === "edit") {
+		 			complete_form(id);
+		 		}
+
+		 		const form = document.getElementById('student_form');
+		 		form.style.display = "block";
+		 	}
+
+			function fetch_students() {
+			  	$.ajax({
+				  	method: "GET",
+				   	url: "http://localhost:8080/students/list/",
+				   	success: function(data) {
+				    	let content = "";
+				    	const type = "\"edit\"";
+
+				    	$.each(data, function(index, item) {
+				    		const id = JSON.stringify(item._id);
+
+					        content += "<tr>" +
+					        		   "<td>" + (index + 1) + "</td>" +
+					        		   "<td>" + item.name + "</td>" +
+					        		   "<td>" + item.age + "</td>" +
+					        		   "<td>" + item.faculty + "</td>" +
+					        		   "<td>" + item.email + "</td>" +
+					        		   "<td>" +
+					        		   "<button onclick='handle_form(" + type +
+					        		   			", " + id + ")'>Edit</button>" +
+					        		   "<button onclick='delete_student(" + id +
+					        		   				")'>Delete</button>" +
+					        		   "</td>" +
+					        		   "</tr>";
+					    });
+
+				    	$("tbody").html(content);
+				    },
+				    error: function(err) {
+			            console.log(err);
+			        }
+				});
+		 	}
+
+		 	function redirect_to_chat() {
+		 		/*
+		 			Cand vom face merge la acest branch pe master, vom avea deja
+		 			URI pentru identificare chat.html
+		 		*/
+		 		const url = "http://localhost:8080/chat";
+		 		$(location).attr('href', url);
+		 	}
+
+			$(document).ready(function() {
+				fetch_students();
+
+				$(document).on("submit", "form", function(e) {
+				    e.preventDefault();
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<table>
+			<thead>
+				<tr>
+					<th>Id</th>
+					<th>Name</th>
+					<th>Age</th>
+					<th>Faculty</th>
+					<th>Email</th>
+					<th>Options</th>
+				</tr>
+			</thead>
+	    	<tbody></tbody>
+	    </table>
+
+	    <button onclick="handle_form('create')">Add</button>
+	    <button onclick="delete_all_students()">Delete All</button>
+	    <button onclick="redirect_to_chat()">Chat</button>
+
+	    <form id="student_form" style="display: none;">
+	    	<input type="hidden" id="id" />
+	    	<input type="text" id="name" placeholder="Student name" />
+	    	<input type="number" id="age" placeholder="Student age" />
+	    	<input type="text" id="faculty" placeholder="Faculty" />
+	    	<input type="email" id="email" placeholder="Student Email" />
+	    	<button onclick="perform_operation()">Submit</button>
+	    </form>
+	</body>
+</html>

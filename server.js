@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 
 const app = express();
 
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // Configuring the database
@@ -23,6 +23,14 @@ mongoose.connect(dbConfig.url, {
 }).catch((err) => {
     console.log("Could not connect to the database. Exiting now...", err);
     process.exit();
+});
+
+app.get('/favicon.ico', (req, res) => {
+    res.status(204).end();
+});
+
+app.get("/dashboard", (req, res) => {
+    res.sendFile("./public/index.html", { root: __dirname });
 });
 
 app.get("/chat", (req, res) => {
